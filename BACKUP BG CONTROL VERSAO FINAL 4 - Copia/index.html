@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WR | DIGITAL ECOSYSTEM</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="wr-portal" class="portal-overlay">
+        <div class="portal-content">
+            <div class="wr-logo-container">
+                <div class="wr-logo-gfx">WR</div>
+                <div class="wr-logo-glow"></div>
+            </div>
+            
+            <h1 class="portal-title">SOLUTIONS <span class="blue-text">SYSTEM</span></h1>
+            <p class="portal-subtitle">HIGH PERFORMANCE VIBE CODING</p>
+
+            <button class="btn-start-portal" onclick="acessarSistema()">
+                INICIAR SISTEMA
+                <div class="btn-flare"></div>
+            </button>
+
+            <footer class="portal-footer">
+                <p class="creator-label">Criador do sistema:</p>
+                <div class="social-row">
+                    <a href="https://instagram.com/wrmonteiro_" target="_blank" class="social-link"><i class="fab fa-instagram"></i> @wrmonteiro</a>
+                    <span class="v-divider">|</span>
+                    <a href="https://wa.me/5575981863669" target="_blank" class="social-link"><i class="fab fa-whatsapp"></i> 75 98186-3669</a>
+                </div>
+                <p class="hire-phrase">Gostou do sistema? Quer algo parecido? Ligue e contrate!</p>
+            </footer>
+        </div>
+    </div>
+
+    <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+    
+    <div id="printableContract" class="print-only"></div>
+    <div class="nebula"></div>
+
+    <div class="menu-trigger" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <div id="modalObs" class="modal-vibe" style="display:none;">
+        <div class="glass-card modal-content">
+            <h3 class="blue-text"><i class="fas fa-eye"></i> Detalhes da O.S.</h3>
+            <div id="obsContent" class="obs-body"></div>
+            <button class="btn-fade" onclick="closeObs()">FECHAR</button>
+        </div>
+    </div>
+
+    <nav id="sideMenu" class="sidebar">
+        <div class="sidebar-header">
+            <h3>Navegação</h3>
+            <i class="fas fa-times" onclick="toggleMenu()" style="cursor:pointer; color:var(--red-fire);"></i>
+        </div>
+        <div class="sidebar-links">
+            <a href="#" class="active" id="link-dashboard" onclick="showTab('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="#" id="link-compras" onclick="showTab('compras')"><i class="fas fa-shopping-cart"></i> Compras (Usados)</a>
+            <a href="#" id="link-estoque" onclick="showTab('estoque')"><i class="fas fa-box"></i> Estoque de Peças</a>
+            <a href="#" id="link-calculadora" onclick="showTab('calculadora')"><i class="fas fa-calculator"></i> Calculadora</a>
+            <a href="#" id="link-os" onclick="showTab('os')"><i class="fas fa-file-invoice"></i> Gerador de OS</a>
+            <a href="#" id="link-download" onclick="showTab('download')"><i class="fas fa-download"></i> Instalar App</a>
+            <a href="#" id="link-historico" onclick="showTab('historico')"><i class="fas fa-history"></i> Histórico Geral</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="gfx-title">BG-CONTROL</h1>
+
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="glass-card summary-header">
+                <div class="stat-item"><small>ENTRADAS</small><span id="totalE" class="stat-value blue-text">R$ 0,00</span></div>
+                <div class="stat-item"><small>CUSTO EM PEÇAS</small><span id="totalS" class="stat-value orange-text">R$ 0,00</span></div>
+                <div class="stat-item"><small>LUCRO REAL</small><span id="totalL" class="stat-value green-text">R$ 0,00</span></div>
+            </div>
+            <div class="dashboard-grid">
+                <div class="glass-card">
+                    <h3 class="card-title blue-text">Nova Ordem de Serviço</h3>
+                    <form id="formOS">
+                        <input type="text" id="cliente" placeholder="Nome do Cliente" required>
+                        <input type="text" id="aparelho" placeholder="Modelo do Celular" required>
+                        <select id="peca-usada" class="custom-select">
+                            <option value="">Selecione a Peça (Opcional)</option>
+                        </select>
+                        <input type="text" id="imei" placeholder="IMEI / Serial">
+                        <textarea id="defeito" placeholder="Relato do Defeito"></textarea>
+                        <input type="text" id="valor" placeholder="Valor Cobrado" required>
+                        <button type="button" class="btn-fade" onclick="lancarServico()">Lançar Serviço</button>
+                    </form>
+                </div>
+                <div class="glass-card">
+                    <h3 class="card-title orange-text">Fluxo Recente</h3>
+                    <div id="extrato-lista" class="extrato-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-calculadora" class="tab-content">
+            <div class="glass-card calc-container-vibe">
+                <h3 class="card-title blue-text"><i class="fas fa-calculator"></i> Calculadora de Bancada</h3>
+                <div class="calc-body">
+                    <div id="calc-display" class="calc-screen">0</div>
+                    <div class="calc-buttons">
+                        <button class="btn-calc btn-op" onclick="pressCalc('C')">C</button>
+                        <button class="btn-calc btn-op" onclick="pressCalc('/')">/</button>
+                        <button class="btn-calc btn-op" onclick="pressCalc('*')">x</button>
+                        <button class="btn-calc btn-op" onclick="pressCalc('DEL')">«</button>
+                        <button class="btn-calc" onclick="pressCalc('7')">7</button>
+                        <button class="btn-calc" onclick="pressCalc('8')">8</button>
+                        <button class="btn-calc" onclick="pressCalc('9')">9</button>
+                        <button class="btn-calc btn-op" onclick="pressCalc('-')">-</button>
+                        <button class="btn-calc" onclick="pressCalc('4')">4</button>
+                        <button class="btn-calc" onclick="pressCalc('5')">5</button>
+                        <button class="btn-calc" onclick="pressCalc('6')">6</button>
+                        <button class="btn-calc btn-op" onclick="pressCalc('+')">+</button>
+                        <button class="btn-calc" onclick="pressCalc('1')">1</button>
+                        <button class="btn-calc" onclick="pressCalc('2')">2</button>
+                        <button class="btn-calc" onclick="pressCalc('3')">3</button>
+                        <button class="btn-calc btn-equal" onclick="pressCalc('=')">=</button>
+                        <button class="btn-calc btn-zero" onclick="pressCalc('0')">0</button>
+                        <button class="btn-calc" onclick="pressCalc('.')">.</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-compras" class="tab-content">
+            <div class="glass-card">
+                <h3 class="card-title blue-text">Nova Compra de Usado</h3>
+                <p class="juridico-text"><i class="fas fa-gavel"></i> O vendedor declara origem lícita sob penas da lei.</p>
+                <form id="formCompra">
+                    <div class="estoque-form-grid">
+                        <input type="text" id="v-nome" placeholder="Vendedor">
+                        <input type="text" id="v-cpf" placeholder="CPF">
+                        <input type="text" id="c-aparelho" placeholder="Aparelho">
+                    </div>
+                    <div class="estoque-form-grid">
+                        <input type="text" id="c-imei" placeholder="IMEI">
+                        <input type="text" id="c-valor" placeholder="Valor Pago">
+                    </div>
+                    <button type="button" class="btn-fade" onclick="registrarCompra()">Salvar e Gerar Contrato</button>
+                </form>
+                <hr class="separator">
+                <h3 class="card-title white-text"><i class="fas fa-file-contract"></i> Contratos Gerados</h3>
+                <div id="lista-compras-historico" class="extrato-container"></div>
+            </div>
+        </div>
+
+        <div id="tab-estoque" class="tab-content">
+            <div class="glass-card">
+                <h3 class="card-title blue-text">Gestão de Inventário</h3>
+                <div class="estoque-form-grid">
+                    <input type="text" id="estoque-nome" placeholder="Peça">
+                    <input type="text" id="estoque-custo" placeholder="Custo">
+                    <select id="estoque-qtd" class="custom-select"></select>
+                    <button type="button" class="btn-fade" onclick="adicionarAoEstoque()">Cadastrar</button>
+                </div>
+                <hr class="separator">
+                <div id="lista-estoque-display" class="estoque-list"></div>
+            </div>
+        </div>
+
+        <div id="tab-historico" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="glass-card"><h3 class="card-title orange-text">Pendentes</h3><div id="lista-historico-pendentes" class="extrato-container"></div></div>
+                <div class="glass-card"><h3 class="card-title green-text">Pagos</h3><div id="lista-historico-pagos" class="extrato-container"></div></div>
+            </div>
+        </div>
+
+        <div id="tab-os" class="tab-content">
+            <div class="glass-card">
+                <h3 class="card-title blue-text">Emissão de OS Profissional</h3>
+                <div id="os-documento-interativo" class="os-sheet">
+                    <div class="os-header-table">
+                        <div class="os-logo-area"><div class="bg-logo-fade">BG</div></div>
+                        <div class="os-info-area">
+                            <center><strong>ASSISTÊNCIA TÉCNICA ESPECIALIZADA</strong></center>
+                            <input type="text" class="os-input-borderless center" value="Gabriel Griim/Cachoeira - Centro">
+                            <input type="text" class="os-input-borderless center" value="Whatsapp: (75) 99274-8612 - CPF: 056.260.555-09">
+                        </div>
+                    </div>
+                    <div class="os-row-title">ORDEM DE SERVIÇO</div>
+                    <div class="os-section">
+                        <div class="os-input-group"><label>Cliente:</label><input type="text" class="os-field"></div>
+                        <div class="os-grid-3">
+                            <div class="os-input-group"><label>Contato:</label><input type="text" class="os-field"></div>
+                            <div class="os-input-group"><label>Modelo:</label><input type="text" class="os-field"></div>
+                            <div class="os-input-group"><label>IMEI:</label><input type="text" class="os-field"></div>
+                        </div>
+                    </div>
+                    <div class="os-flex-row">
+                        <div class="os-col-left">
+                            <div class="os-row-title-small">DADOS E OBSERVAÇÕES</div>
+                            <textarea class="os-area-large" placeholder="Defeito relatado e observações técnicas..."></textarea>
+                        </div>
+                        <div class="os-col-right">
+                            <div class="os-row-title-small">CHECKLIST</div>
+                            <div class="os-checklist-grid">
+                                <span><input type="checkbox"> Liga</span> <span><input type="checkbox"> Touch</span>
+                                <span><input type="checkbox"> Áudio</span> <span><input type="checkbox"> Câmera</span>
+                                <span><input type="checkbox"> Carga</span> <span><input type="checkbox"> Botões</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="os-finance-box">
+                        <strong>VALOR TOTAL: R$</strong> <input type="text" class="os-field" style="width:100px">
+                    </div>
+                </div>
+                <button class="btn-fade" style="margin-top:20px;" onclick="imprimirOS()">IMPRIMIR ORDEM DE SERVIÇO</button>
+            </div>
+        </div>
+
+        <div id="tab-download" class="tab-content">
+            <div class="glass-card" style="text-align: center;">
+                <h3 class="card-title blue-text">BG-CONTROL APP</h3>
+                <p>Instale o sistema na tela inicial do seu celular.</p>
+                <button id="installBtn" class="btn-fade" style="margin-top:20px; background:var(--blue-galaxy); color:#000;">INSTALAR AGORA</button>
+            </div>
+        </div>
+
+    </div>
+    <script src="cerebro-bg.js"></script>
+</body>
+</html>
