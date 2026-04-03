@@ -1,9 +1,8 @@
 // =====================================
-// CONFIGURAÇÃO SUPABASE (Corrigido Conflito)
+// CONFIGURAÇÃO SUPABASE
 // =====================================
 const supabaseUrl = 'https://zqvfnykxwlcozvawqgrn.supabase.co'; 
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxdmZueWt4d2xjb3p2YXdxZ3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NDkzNDQsImV4cCI6MjA4NTMyNTM0NH0.CevpF9vP4748mb2vFNsOp5Kq6u7Nfp_100bJcW7ogUQ';
-// Mudamos para 'nuvemDB' para evitar o SyntaxError 'already declared'
 const nuvemDB = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 // =====================================
@@ -363,7 +362,7 @@ function atualizarEstoqueUI() {
     }
 }
 
-// FUNÇÃO DE IMPRESSÃO DA OS E APP
+// FUNÇÃO DE IMPRESSÃO DA OS
 function imprimirOS() {
     const doc = document.getElementById('os-documento-interativo');
     const printable = document.getElementById('printableContract');
@@ -384,14 +383,34 @@ function imprimirOS() {
     setTimeout(() => { window.print(); }, 700);
 }
 
+// =====================================
+// PWA: LÓGICA DE INSTALAÇÃO CORRIGIDA
+// =====================================
+
+// Registra o Service Worker (Essencial para PC/Android reconhecerem o PWA)
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(err => {
+        console.log('Aviso: Service Worker não registrado.', err);
+    });
+}
+
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
+    e.preventDefault(); // Impede o prompt automático do Chrome
+    deferredPrompt = e; // Guarda o evento para usarmos no botão
 });
 
-document.getElementById('installBtn')?.addEventListener('click', () => {
+document.getElementById('installBtn')?.addEventListener('click', async () => {
     if (deferredPrompt) {
+        // Mostra o prompt oficial do Google Chrome/Android
         deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            console.log('App instalado com sucesso!');
+        }
+        deferredPrompt = null; // Limpa para não usar duas vezes
+    } else {
+        // Fallback de instrução para iPhone (iOS) e navegadores sem suporte
+        alert("INSTALAÇÃO NATIVA:\n\n📱 IPHONE (iOS):\nToque no botão 'Compartilhar' no Safari (ícone do quadrado com seta) e selecione 'Adicionar à Tela de Início'.\n\n🤖 ANDROID / 💻 PC:\nCertifique-se de acessar por HTTPS ou verifique se o App já está instalado.");
     }
 });
