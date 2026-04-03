@@ -1,9 +1,18 @@
 // =====================================
-// CONFIGURAÇÃO SUPABASE
+// CONFIGURAÇÃO SUPABASE (Blindado)
 // =====================================
-const supabaseUrl = 'https://zqvfnykxwlcozvawqgrn.supabase.co'; 
+const supabaseUrl = 'https://zqvfnykxwlcozvawqgrn.supabase.co'; // Quando for colocar a sua, garanta que comece com https://
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxdmZueWt4d2xjb3p2YXdxZ3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NDkzNDQsImV4cCI6MjA4NTMyNTM0NH0.CevpF9vP4748mb2vFNsOp5Kq6u7Nfp_100bJcW7ogUQ';
-const nuvemDB = window.supabase.createClient(supabaseUrl, supabaseKey);
+let nuvemDB = null;
+
+// Evita o crash se a URL ainda for 'SUA_URL_AQUI'
+if (supabaseUrl.startsWith('http')) {
+    try {
+        nuvemDB = window.supabase.createClient(supabaseUrl, supabaseKey);
+    } catch (e) {
+        console.error("Erro no Supabase:", e);
+    }
+}
 
 // =====================================
 // LÓGICA DO PORTAL WR (1 VEZ AO DIA)
@@ -60,6 +69,7 @@ let calcValue = "0";
 // COMUNICAÇÃO COM A NUVEM
 // =====================================
 async function carregarDadosNuvem() {
+    if (!nuvemDB) return; // Só tenta carregar se o Supabase estiver configurado
     try {
         const { data, error } = await nuvemDB.from('bg_cloud_state').select('*').eq('id', 1).single();
         if (data) {
@@ -74,6 +84,7 @@ async function carregarDadosNuvem() {
 }
 
 async function salvarDadosNuvem() {
+    if (!nuvemDB) return; // Só tenta salvar se o Supabase estiver configurado
     try {
         await nuvemDB.from('bg_cloud_state').upsert({
             id: 1,
